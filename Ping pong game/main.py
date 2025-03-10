@@ -40,7 +40,7 @@ fps = 60
 
 Player_1 = Player('pong rod.png', 30, 200, 4, 50, 150)
 Player_2 = Player('pong rod.png', 520, 200, 4, 50, 150)
-Ball = GameSprite('pong boll.png', 200, 200, 4, 50, 50)
+Ball = GameSprite('pong boll.png', 200, 200, 4, 100, 100)
 
 font.init()
 font = font.Font(None, 35)
@@ -48,6 +48,36 @@ lose1 = font.render('PLAYER 1 LOSE!', True, (180, 0, 0))
 lose2 = font.render('PLAYER 2 LOSE!', True, (180, 0, 0))
 speed_x = 3
 speed_y = 3
+
+def MainMenu():
+    Intro = True
+    while Intro:
+        for e in event.get():
+            if e.type == QUIT:
+                return False
+        '''window.fill(back)'''
+
+        introtext = font.render("Ping Pong Game", True, (0,0,0))
+        starttext = font.render("Press any key to start", True, (0,0,0))
+
+        intromid = introtext.get_rect(center = (win_width//2, win_height//2 - 40))
+        startmid = starttext.get_rect(center = (win_width//2, win_height//2 + 40))
+
+        window.blit(introtext, intromid)
+        window.blit(starttext, startmid)
+
+        display.update()
+        keypress = key.get_pressed()
+        if any(keypress):
+            Intro = False
+        clock.tick(fps)
+    return True
+
+if not MainMenu():
+    game = False
+
+score1 = 0
+score2 = 0
 
 while game:
     for e in event.get():
@@ -68,14 +98,25 @@ while game:
             speed_y *= -1
         
         if Ball.rect.x < 0:
-            finish = True
-            window.blit(lose1, (200,200))
-            game_over = True
+            score2 += 1
+            Ball.rect.x =win_width//2
+            Ball.rect.y =win_height//2
+            if score2 == 5:
+                finish = True
+                window.blit(lose1, (200,200))
+                game_over = True   
 
         if Ball.rect.x > win_width:
-            finish = True
-            window.blit(lose2, (200,200))
-            game_over = True
+            score1 += 1
+            Ball.rect.x =win_width//2
+            Ball.rect.y =win_height//2
+            if score1 == 5:
+                finish = True
+                window.blit(lose2, (200,200))
+                game_over = True
+
+        scoretext = font.render(f"Player 1 {score1} Player 2 {score2}", True, (0,0,0))
+        window.blit(scoretext, (win_width//2 - scoretext.get_width()//2, 20))
         
         Player_1.reset()
         Player_2.reset()
